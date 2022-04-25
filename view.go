@@ -10,6 +10,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/mattn/go-runewidth"
 	"github.com/nsf/termbox-go"
 )
 
@@ -324,17 +325,20 @@ func (v *View) draw() error {
 	if v.Autoscroll && len(v.viewLines) > maxY {
 		v.oy = len(v.viewLines) - maxY
 	}
-	y := 0
-	for i, vline := range v.viewLines {
-		if i < v.oy {
+	y := -v.oy
+	for _, vline := range v.viewLines {
+		if y < 0 {
+			y++
 			continue
 		}
 		if y >= maxY {
 			break
 		}
-		x := 0
-		for j, c := range vline.line {
-			if j < v.ox {
+		x := -v.ox
+		for _, c := range vline.line {
+			chWidth := runewidth.RuneWidth(c.chr)
+			if x < 0 {
+				x += chWidth
 				continue
 			}
 			if x >= maxX {
@@ -353,7 +357,8 @@ func (v *View) draw() error {
 			if err := v.setRune(x, y, c.chr, fgColor, bgColor); err != nil {
 				return err
 			}
-			x++
+			// x++
+			x += chWidth
 		}
 		y++
 	}
