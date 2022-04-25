@@ -7,7 +7,7 @@ package main
 import (
 	"log"
 
-	"github.com/jroimartin/gocui"
+	"github.com/johnbitcn/gocui"
 )
 
 func main() {
